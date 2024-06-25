@@ -35,7 +35,7 @@ describe("NFT Contract", function () {
             adminAddress,
             admin2Address
         )) as NFT;
-        // await nft.deployed();
+        await nft.waitForDeployment();
 
         mintPrice = await nft.price();
     });
