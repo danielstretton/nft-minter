@@ -42,7 +42,7 @@ describe("NFT Contract", function () {
 
     describe("Deployment", function () {
         it("deploys successfully", async function () {
-            const address = nft.target;
+            const address = await nft.getAddress();
             expect(address).to.not.equal("");
             expect(address).to.not.equal(0x0);
             expect(address).to.not.equal(null);
@@ -102,7 +102,7 @@ describe("NFT Contract", function () {
         it("can mint", async function () {
             // Mint NFT
             await addr1.sendTransaction({
-                to: nft.target,
+                to: await nft.getAddress(),
                 value: mintPrice,
                 data: nft.interface.encodeFunctionData("mint", [1]),
             });
@@ -134,7 +134,7 @@ describe("NFT Contract", function () {
     it("can mint multiple quantities", async function () {
         const quantity = 3;
         await addr2.sendTransaction({
-            to: nft.target,
+            to: await nft.getAddress(),
             value: BigInt(mintPrice) * BigInt(quantity),
             data: nft.interface.encodeFunctionData("mint", [quantity]),
         });
@@ -158,7 +158,7 @@ describe("NFT Contract", function () {
 
     it("current rate now set", async function () {
         await addr1.sendTransaction({
-            to: nft.target,
+            to: await nft.getAddress(),
             value: mintPrice,
             data: nft.interface.encodeFunctionData("mint", [1]),
         });
@@ -168,13 +168,13 @@ describe("NFT Contract", function () {
 
     it("has balances to reflect", async function () {
         await addr1.sendTransaction({
-            to: nft.target,
+            to: await nft.getAddress(),
             value: mintPrice,
             data: nft.interface.encodeFunctionData("mint", [1]),
         });
 
         await addr2.sendTransaction({
-            to: nft.target,
+            to: await nft.getAddress(),
             value: BigInt(mintPrice) * BigInt(3),
             data: nft.interface.encodeFunctionData("mint", [3]),
         });
@@ -204,18 +204,20 @@ describe("NFT Contract", function () {
     describe("Post Mint", function () {
         it("can transfer ownership", async function () {
             await addr1.sendTransaction({
-                to: nft.target,
+                to: await nft.getAddress(),
                 value: mintPrice,
                 data: nft.interface.encodeFunctionData("mint", [1]),
             });
 
             await addr2.sendTransaction({
-                to: nft.target,
+                to: await nft.getAddress(),
                 value: BigInt(mintPrice) * BigInt(3),
                 data: nft.interface.encodeFunctionData("mint", [3]),
             });
             // Approve contract for secondary sales
-            await nft.connect(admin).setApprovalForAll(nft.target, true);
+            await nft
+                .connect(admin)
+                .setApprovalForAll(await nft.getAddress(), true);
 
             const owner = await nft.ownerOf(0);
             await nft
